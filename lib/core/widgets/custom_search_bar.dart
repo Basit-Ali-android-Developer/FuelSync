@@ -61,14 +61,14 @@ class CustomSearchBar extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: AppColors.primary.withOpacity(0.15),
+            color: AppColors.customColor.withOpacity(0.15),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: AppColors.primary,
+            color: AppColors.customColor,
             width: 1.5,
           ),
         ),

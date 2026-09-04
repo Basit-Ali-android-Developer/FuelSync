@@ -1,29 +1,29 @@
-// import 'package:ecommerce/core/constants/product.dart';
-//
-// abstract class HomeState {}
-//
-// class HomeInitialState extends HomeState {}
-//
-// class HomeLoadedState extends HomeState {
-//   final List<Product> allProducts;
-//   final List<Product> filteredProducts;
-//   final String searchQuery;
-//
-//   HomeLoadedState({
-//     required this.allProducts,
-//     required this.filteredProducts,
-//     required this.searchQuery,
-//   });
-//
-//   HomeLoadedState copyWith({
-//     List<Product>? allProducts,
-//     List<Product>? filteredProducts,
-//     String? searchQuery,
-//   }) {
-//     return HomeLoadedState(
-//       allProducts: allProducts ?? this.allProducts,
-//       filteredProducts: filteredProducts ?? this.filteredProducts,
-//       searchQuery: searchQuery ?? this.searchQuery,
-//     );
-//   }
-// }
+
+
+import 'package:fuel_application/screens/home/data/dashboard_response_model.dart';
+
+enum HomeStatus { initial, loading, success, error }
+
+class HomeState {
+  final HomeStatus status;
+  final DashboardResponseModel? dashboardData;
+  final String? errorMessage;
+
+  const HomeState({
+    this.status = HomeStatus.initial,
+    this.dashboardData,
+    this.errorMessage,
+  });
+
+  HomeState copyWith({
+    HomeStatus? status,
+    DashboardResponseModel? dashboardData,
+    String? errorMessage,
+  }) {
+    return HomeState(
+      status: status ?? this.status,
+      dashboardData: dashboardData ?? this.dashboardData,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+}

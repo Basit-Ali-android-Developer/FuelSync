@@ -4,8 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fuel_application/screens/dashboard/logic/dashboard_cubit.dart';
 import 'package:fuel_application/core/constants/app_colors.dart';
 import 'package:fuel_application/screens/dashboard/logic/dashboard_state.dart';
-import 'package:fuel_application/screens/home/presentation/screen/home_Screen.dart';
-
+import 'package:fuel_application/screens/home/presentation/screen/home_screen.dart';
+import 'package:fuel_application/screens/more/presentation/screen/more_screen.dart';
+import 'package:fuel_application/screens/report/presentation/screen/report_screen.dart';
+import 'package:fuel_application/screens/stock/presentation/screen/stock_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   final int initialIndex;
@@ -29,36 +31,48 @@ class _DashboardScreenBody extends StatelessWidget {
 
   final List<Widget> pages = const [
     HomeScreen(),
-  //  WishlistScreen(),
-    // CartScreen(),
-    // ProfileScreen(),
+    StockScreen(),
+    ReportScreen(),
+    MoreScreen(),
   ];
 
   Widget _buildNavItem({
-    required String iconPath,
+    String? iconPath,
+    IconData? icon,
     required String label,
     required bool isActive,
   }) {
+    final activeColor = AppColors.customColor;
+    const inactiveColor = Colors.grey;
+    final color = isActive ? activeColor : inactiveColor;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SvgPicture.asset(
-          iconPath,
-          width: 24,
-          height: 24,
-          colorFilter: ColorFilter.mode(
-            isActive ? AppColors.primary : Colors.grey,
-            BlendMode.srcIn,
+        if (icon != null)
+          Icon(
+            icon,
+            size: 24,
+            color: color,
+          )
+        else if (iconPath != null)
+          SvgPicture.asset(
+            iconPath,
+            width: 24,
+            height: 24,
+            colorFilter: ColorFilter.mode(
+              color,
+              BlendMode.srcIn,
+            ),
           ),
-        ),
         const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
             fontSize: 12,
             fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-            color: isActive ? AppColors.primary : Colors.grey,
+            color: color,
           ),
         ),
         const SizedBox(height: 4),
@@ -73,11 +87,10 @@ class _DashboardScreenBody extends StatelessWidget {
         final selectedIndex = state.selectedIndex;
 
         return PopScope(
-          canPop: selectedIndex == 0, // Allow pop/exit only if on Home tab
+          canPop: selectedIndex == 0, // Allow exit only if on Home tab
           onPopInvokedWithResult: (didPop, result) {
             if (didPop) return;
 
-            // Switch back to Home tab if on another screen
             if (selectedIndex != 0) {
               context.read<DashboardCubit>().selectHomeTab();
             }
@@ -121,27 +134,27 @@ class _DashboardScreenBody extends StatelessWidget {
                   ),
                   BottomNavigationBarItem(
                     icon: _buildNavItem(
-                      iconPath: 'assets/icons/heart_icon.svg',
-                      label: "Wishlist",
+                      iconPath: 'assets/icons/stock_svg.svg',
+                      label: "Stock",
                       isActive: selectedIndex == 1,
                     ),
-                    label: "Wishlist",
+                    label: "Stock",
                   ),
                   BottomNavigationBarItem(
                     icon: _buildNavItem(
-                      iconPath: 'assets/icons/cart_icon.svg',
-                      label: "Cart",
+                      iconPath: 'assets/icons/report_svg.svg',
+                      label: "Report",
                       isActive: selectedIndex == 2,
                     ),
-                    label: "Cart",
+                    label: "Report",
                   ),
                   BottomNavigationBarItem(
                     icon: _buildNavItem(
-                      iconPath: 'assets/icons/person_icon.svg',
-                      label: "Profile",
+                      icon: Icons.more_horiz, // Native 3 dots icon
+                      label: "More",
                       isActive: selectedIndex == 3,
                     ),
-                    label: "Profile",
+                    label: "More",
                   ),
                 ],
               ),
