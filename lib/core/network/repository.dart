@@ -4,9 +4,11 @@ import 'package:fuel_application/core/helper/cache_helper.dart';
 import 'package:fuel_application/core/network/dio_factory.dart';
 import 'package:fuel_application/screens/auth/data/login_request.dart';
 import 'package:fuel_application/screens/auth/data/login_response.dart';
+import 'package:fuel_application/screens/branch/data/branch_model.dart';
 
 abstract class AuthRepository {
   Future<LoginResponseModel> login(LoginRequestModel request);
+  Future<List<BranchModel>> getBranches();
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -22,17 +24,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final loginResponse = LoginResponseModel.fromJson(response.data);
 
-      // Handle custom API failure response
       if (!loginResponse.success || loginResponse.data == null) {
         throw Exception(
           loginResponse.error ?? 'Login failed. Please check your credentials.',
         );
       }
 
-      // Cache access token, refresh token, and user email session
+
       await CacheHelper.saveAuthData(
         token: loginResponse.data!.accessToken,
-        userId: '', // Updated as API payload currently omits user object
+        userId: '',
         userName: '',
         userEmail: request.email,
         userPhone: '',
@@ -60,5 +61,34 @@ class AuthRepositoryImpl implements AuthRepository {
       return 'Cannot connect to server. Check your connection or backend status.';
     }
     return 'An unexpected error occurred. Please try again.';
+  }
+
+
+  @override
+  Future<List<BranchModel>> getBranches() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    // Mock API response matching your JSON payload
+    final response = {
+      "success": true,
+      "data": [
+        {
+          "branchId": 3,
+          "branchName": "Main Branch",
+          "address": "123 Main Road, Lahore",
+          "isShiftOpen": true,
+        },
+        {
+          "branchId": 4,
+          "branchName": "Gulberg Branch",
+          "address": "45 Gulberg III, Lahore",
+          "isShiftOpen": false,
+        }
+      ],
+      "error": null
+    };
+
+    final List list = response["data"] as List;
+    return list.map((e) => BranchModel.fromJson(e)).toList();
   }
 }

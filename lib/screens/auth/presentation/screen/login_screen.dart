@@ -7,6 +7,7 @@ import 'package:fuel_application/core/widgets/primary_button.dart';
 import 'package:fuel_application/core/widgets/primary_text_field.dart';
 import 'package:fuel_application/screens/auth/logic/login_cubit.dart';
 import 'package:fuel_application/screens/auth/logic/login_state.dart';
+import 'package:fuel_application/screens/branch/presentation/screen/branch_screen.dart';
 import 'package:fuel_application/screens/dashboard/presentation/screen/dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ToastHelper.showSuccess(context, 'Login successfully!');
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                        MaterialPageRoute(builder: (_) => const BranchScreen()),
                             (route) => false,
                       );
                     }
@@ -218,21 +219,37 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 28),
 
                               // SUBMIT BUTTON
-                              PrimaryButton(
-                                title: isLoading ? "LOGGING IN..." : "LOG IN TO BRANCH",
-                                icon: Icons.arrow_forward_rounded,
-                                onPressed: isLoading
-                                    ? null
-                                    : () {
-                                  if (_formKey.currentState!.validate()) {
-                                    context.read<LoginCubit>().login(
-                                      tenantCode: _tenantController.text.trim(),
-                                      email: _emailController.text.trim(),
-                                      password: _passwordController.text.trim(),
-                                    );
-                                  }
-                                },
-                              ),
+                              // PrimaryButton(
+                              //   title: isLoading ? "LOGGING IN..." : "LOG IN TO BRANCH",
+                              //   icon: Icons.arrow_forward_rounded,
+                              //   onPressed: isLoading
+                              //       ? null
+                              //       : () {
+                              //     if (_formKey.currentState!.validate()) {
+                              //       context.read<LoginCubit>().login(
+                              //         tenantCode: _tenantController.text.trim(),
+                              //         email: _emailController.text.trim(),
+                              //         password: _passwordController.text.trim(),
+                              //       );
+                              //     }
+                              //   },
+                              // ),
+
+
+                          PrimaryButton(
+                              title: isLoading ? "LOGGING IN..." : "LOG IN TO BRANCH",
+                              icon: Icons.arrow_forward_rounded,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BranchScreen(),
+                                ),
+                              );
+                            },
+                          ),
+
+
                             ],
                           ),
                         ),

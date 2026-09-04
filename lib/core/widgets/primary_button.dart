@@ -5,7 +5,7 @@ class PrimaryButton extends StatelessWidget {
     super.key,
     required this.title,
     required this.onPressed,
-    this.backgroundColor = const Color(0xFF1A2332), // Dark Slate Navy from Image
+    this.backgroundColor = const Color(0xFF1A2332),
     this.textColor = Colors.white,
     this.icon,
   });
