@@ -46,7 +46,7 @@ class BranchScreen extends StatelessWidget {
 
                     // Top Sub-header
                     const Text(
-                      "FUELSYNC",
+                      "FUELBOARD",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,

@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:fuel_application/core/helper/cache_helper.dart';
 import 'package:fuel_application/screens/splash/presentation/splash_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // 1. Preserve native splash screen immediately when user taps app icon
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // Initialize SharedPreferences
+  // 2. Perform background initializations during native splash screen display
   await CacheHelper.init();
+
+  // 3. Remove native splash screen as soon as Flutter renders
+  FlutterNativeSplash.remove();
 
   runApp(const MyApp());
 }
@@ -22,9 +28,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFFAF9F6),
       ),
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
-
-

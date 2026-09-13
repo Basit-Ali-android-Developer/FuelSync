@@ -78,40 +78,51 @@ class _SplashScreenState extends State<SplashScreen>
                 scale: _scaleAnimation,
                 child: SafeArea(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Spacer(),
+                      // Reduced top space to shift logo upward
+                      const Spacer(flex: 2),
 
-                      Image.asset(
-                        'assets/images/logo.png',
-                        width: 150,
-                        height: 150,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      const Text(
-                        "Fuel Sync",
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E1E1E),
-                          letterSpacing: 8.0,
+                      // Smaller, cleaner logo display
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(18.0),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.contain,
                         ),
                       ),
+
+                      const SizedBox(height: 16),
+
+                      // App Title
+                      const Text(
+                        "FuelBoard",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E1E1E),
+                          letterSpacing: 3.5,
+                        ),
+                      ),
+
                       const SizedBox(height: 6),
+
+                      // Subtitle
                       Text(
                         "ENTERPRISE STATION MANAGER",
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: Colors.grey.shade600,
-                          letterSpacing: 2.0,
+                          letterSpacing: 1.5,
                         ),
                       ),
-                      const Spacer(),
 
-                      // Primary blue progress indicator
+                      // Increased bottom space to hold the content higher up
+                      const Spacer(flex: 3),
+
+                      // Progress Indicator
                       const SizedBox(
                         width: 24,
                         height: 24,
@@ -122,7 +133,8 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 48),
+
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),

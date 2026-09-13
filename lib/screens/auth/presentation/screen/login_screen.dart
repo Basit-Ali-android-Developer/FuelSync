@@ -76,24 +76,39 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
 
                         // App Icon
+                        // Container(
+                        //   width: 64,
+                        //   height: 64,
+                        //   decoration: BoxDecoration(
+                        //     color: const Color(0xFF1E293B),
+                        //     borderRadius: BorderRadius.circular(18),
+                        //   ),
+                        //   child: const Icon(
+                        //     Icons.local_gas_station_rounded,
+                        //     color: Colors.white,
+                        //     size: 32,
+                        //   ),
+                        // ),
+
                         Container(
                           width: 64,
                           height: 64,
+                          padding: const EdgeInsets.all(12), // Adds breathing room around the PNG logo
                           decoration: BoxDecoration(
                             color: const Color(0xFF1E293B),
                             borderRadius: BorderRadius.circular(18),
                           ),
-                          child: const Icon(
-                            Icons.local_gas_station_rounded,
-                            color: Colors.white,
-                            size: 32,
+                          child: Image.asset(
+                            'assets/images/logo.png', // Replace with your actual image path
+                            fit: BoxFit.contain,
                           ),
                         ),
+
                         const SizedBox(height: 16),
 
                         // App Title
                         const Text(
-                          "FuelSync",
+                          "FuelBoard",
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
