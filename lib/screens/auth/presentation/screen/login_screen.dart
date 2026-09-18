@@ -234,35 +234,35 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 28),
 
                               // SUBMIT BUTTON
-                              PrimaryButton(
-                                title: isLoading ? "LOGGING IN..." : "LOG IN TO BRANCH",
-                                icon: Icons.arrow_forward_rounded,
-                                onPressed: isLoading
-                                    ? null
-                                    : () {
-                                  if (_formKey.currentState!.validate()) {
-                                    context.read<LoginCubit>().login(
-                                      tenantCode: _tenantController.text.trim(),
-                                      email: _emailController.text.trim(),
-                                      password: _passwordController.text.trim(),
-                                    );
-                                  }
-                                },
-                              ),
+                              // PrimaryButton(
+                              //   title: isLoading ? "LOGGING IN..." : "LOG IN TO BRANCH",
+                              //   icon: Icons.arrow_forward_rounded,
+                              //   onPressed: isLoading
+                              //       ? null
+                              //       : () {
+                              //     if (_formKey.currentState!.validate()) {
+                              //       context.read<LoginCubit>().login(
+                              //         tenantCode: _tenantController.text.trim(),
+                              //         email: _emailController.text.trim(),
+                              //         password: _passwordController.text.trim(),
+                              //       );
+                              //     }
+                              //   },
+                              // ),
 
 
-                          // PrimaryButton(
-                          //     title: isLoading ? "LOGGING IN..." : "LOG IN TO BRANCH",
-                          //     icon: Icons.arrow_forward_rounded,
-                          //   onPressed: () {
-                          //     Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //         builder: (context) => BranchScreen(),
-                          //       ),
-                          //     );
-                          //   },
-                          // ),
+                          PrimaryButton(
+                              title: isLoading ? "LOGGING IN..." : "LOG IN TO BRANCH",
+                              icon: Icons.arrow_forward_rounded,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BranchScreen(),
+                                ),
+                              );
+                            },
+                          ),
 
 
                             ],

@@ -4,6 +4,7 @@ import 'package:fuel_application/core/network/repository.dart';
 import 'package:fuel_application/screens/home/logic/home_cubit.dart';
 import 'package:fuel_application/screens/home/logic/home_state.dart';
 import 'package:fuel_application/screens/home/presentation/widget/tank_inventory_card.dart';
+import 'package:fuel_application/screens/shift/presentation/screen/active_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -177,8 +178,17 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ],
                           ),
+
+
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ActiveShiftScreen(),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white.withOpacity(0.15),
                               elevation: 0,
@@ -191,6 +201,8 @@ class HomeScreen extends StatelessWidget {
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
+
+
                         ],
                       ),
                     ),
