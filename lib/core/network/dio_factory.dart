@@ -4,8 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:fuel_application/core/constants/api_endpoint.dart';
 import 'package:fuel_application/core/helper/cache_helper.dart';
 
-
-
 class DioFactory {
   DioFactory._();
 
@@ -28,25 +26,27 @@ class DioFactory {
 
       _dio!.interceptors.add(
         InterceptorsWrapper(
-          onRequest: (options, handler) {
-            //  Fetch saved token from CacheHelper
+          onRequest: (options, handler) async {
+            // Retrieve fresh token on every request directly from SharedPreferences
             final token = CacheHelper.getToken();
 
-            //  Automatically attach Bearer token to all headers if present
             if (token != null &&
                 token != 'null' &&
                 token != 'undefined' &&
                 token.trim().isNotEmpty) {
               final cleanedToken = token.replaceAll('"', '').trim();
               options.headers['Authorization'] = 'Bearer $cleanedToken';
+            } else {
+              // Ensure authorization header is clean if no token is stored
+              options.headers.remove('Authorization');
             }
 
-            //  Extract Token Header for Logging
+            // Extract Authorization Header for Logging
             final String authHeader = options.headers['Authorization'] != null
                 ? "\n Token: ${options.headers['Authorization']}"
                 : "\n Token: None";
 
-            //  Format and log outgoing requests
+            // Format and log outgoing requests
             final String queryParams = options.queryParameters.isNotEmpty
                 ? "\n QueryParams: ${jsonEncode(options.queryParameters)}"
                 : "";
@@ -55,23 +55,21 @@ class DioFactory {
                 : "";
 
             developer.log(
-              " [${options.method}] ${options.uri}$authHeader$queryParams$body",
+              "🚀 [${options.method}] ${options.uri}$authHeader$queryParams$body",
               name: 'DioFactory.Request',
             );
-
 
             return handler.next(options);
           },
 
           onResponse: (response, handler) {
-            //  Pretty-print JSON response payload for debugging
             final String responseString =
             response.data is Map || response.data is List
                 ? const JsonEncoder.withIndent('  ').convert(response.data)
                 : response.data.toString();
 
             developer.log(
-              " [STATUS ${response.statusCode}] ${response.requestOptions.path}\n Response:\n$responseString",
+              "✅ [STATUS ${response.statusCode}] ${response.requestOptions.path}\n Response:\n$responseString",
               name: 'DioFactory.Response',
             );
 
@@ -85,22 +83,20 @@ class DioFactory {
                 path.contains('/signUp') ||
                 path.contains('/signup');
 
-            //  Handle 401 Unauthorized (Session Expiration)
+            // Handle 401 Unauthorized (Session Expiration)
             if (e.response?.statusCode == 401 && !isAuthRequest) {
               developer.log(
-                " Session expired (401). Purging token and resetting cache...",
+                "🔒 Session expired (401). Purging token and resetting cache...",
                 name: 'DioFactory.Error',
               );
 
-              // Automatically clear stored user data upon expired token
               await CacheHelper.clearSession();
 
               return handler.reject(e);
             }
 
-            //  Log error details
             developer.log(
-              " [ERROR ${e.response?.statusCode ?? 'UNKNOWN'}] ${e.requestOptions.path}\n"
+              "❌ [ERROR ${e.response?.statusCode ?? 'UNKNOWN'}] ${e.requestOptions.path}\n"
                   " Message: ${e.message}\n"
                   " Response Data: ${e.response?.data}",
               name: 'DioFactory.Error',

@@ -1,20 +1,32 @@
 class LoginResponseModel {
-  final bool success;
-  final AuthDataModel? data;
-  final String? error;
+  final String accessToken;
+  final String refreshToken;
+  final String email;
+  final String name;
 
   LoginResponseModel({
-    required this.success,
-    this.data,
-    this.error,
+    required this.accessToken,
+    required this.refreshToken,
+    required this.email,
+    required this.name,
   });
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     return LoginResponseModel(
-      success: json['success'] ?? false,
-      data: json['data'] != null ? AuthDataModel.fromJson(json['data']) : null,
-      error: json['error']?.toString(),
+      accessToken: json['accessToken']?.toString() ?? '',
+      refreshToken: json['refreshToken']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
+      'email': email,
+      'name': name,
+    };
   }
 }
 

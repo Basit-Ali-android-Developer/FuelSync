@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fuel_application/core/constants/request_status.dart';
+import 'package:fuel_application/core/helper/cache_helper.dart';
 import 'package:fuel_application/core/network/repository.dart';
 import 'package:fuel_application/screens/branch/logic/branch_cubit.dart';
 import 'package:fuel_application/screens/branch/logic/branch_state.dart';
@@ -104,14 +105,26 @@ class BranchScreen extends StatelessWidget {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: state.selectedBranch != null
-                            ? () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const DashboardScreen(),
-                            ),
-                                (route) => false,
+                            ? () async {
+                          final selected = state.selectedBranch!;
+
+                          // Save branch parameters directly to SharedPreferences
+                          await CacheHelper.saveActiveBranch(
+                            branchId: selected.branchId,
+                            branchName: selected.branchName,
+                            address: selected.address,
+                            isShiftOpen: selected.isShiftOpen,
                           );
+
+                          if (context.mounted) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const DashboardScreen(),
+                              ),
+                                  (route) => false,
+                            );
+                          }
                         }
                             : null,
                         style: ElevatedButton.styleFrom(

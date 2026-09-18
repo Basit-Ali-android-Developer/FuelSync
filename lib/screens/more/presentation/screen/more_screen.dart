@@ -1,12 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fuel_application/screens/auth/presentation/screen/login_screen.dart';
+import 'package:fuel_application/screens/branch/presentation/screen/branch_screen.dart';
 import 'package:fuel_application/screens/more/logic/more_cubit.dart';
 import 'package:fuel_application/screens/more/logic/more_state.dart';
 import 'package:fuel_application/screens/more/presentation/widget/more_option_card.dart';
 
-
 class MoreScreen extends StatelessWidget {
   const MoreScreen({Key? key}) : super(key: key);
+
+  void _showLogoutDialog(BuildContext context) {
+    final cubit = context.read<MoreCubit>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Log Out',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0F172A),
+            ),
+          ),
+          content: const Text(
+            'Are you sure you want to log out of your account?',
+            style: TextStyle(
+              color: Color(0xFF64748B),
+              fontSize: 14,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Color(0xFF64748B),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                cubit.logout();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Log Out'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +75,10 @@ class MoreScreen extends StatelessWidget {
           child: BlocConsumer<MoreCubit, MoreState>(
             listener: (context, state) {
               if (state is MoreLoggedOut) {
-                // Navigate back to login screen
-                Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                );
               }
             },
             builder: (context, state) {
@@ -112,7 +171,8 @@ class MoreScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    state.role,
+                                   // state.role,
+                                    "Manager",
                                     style: const TextStyle(
                                       color: Color(0xFFB45309),
                                       fontSize: 11,
@@ -149,7 +209,7 @@ class MoreScreen extends StatelessWidget {
                         title: "Update Profile",
                         subtitle: "Edit your name, email, and personal information",
                         onTap: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (_) => const UpdateProfileScreen()));
+                          // Navigate to update profile screen
                         },
                       ),
 
@@ -159,7 +219,7 @@ class MoreScreen extends StatelessWidget {
                         title: "Notifications",
                         subtitle: "Manage alert preferences and push notifications",
                         onTap: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen()));
+                          // Navigate to notification screen
                         },
                       ),
                       const SizedBox(height: 24),
@@ -180,6 +240,7 @@ class MoreScreen extends StatelessWidget {
                       const SizedBox(height: 12),
 
                       // Active Branch Details
+                      // Active Branch Details Card
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -188,11 +249,13 @@ class MoreScreen extends StatelessWidget {
                           border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFE2E8F0),
                                     borderRadius: BorderRadius.circular(10),
@@ -200,41 +263,97 @@ class MoreScreen extends StatelessWidget {
                                   child: const Icon(
                                     Icons.store_outlined,
                                     color: Color(0xFF0F172A),
-                                    size: 20,
+                                    size: 22,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Active Branch",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Color(0xFF64748B),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            "Active Branch",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xFF64748B),
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          // Shift Status Indicator Badge
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: state.isShiftOpen
+                                                  ? const Color(0xFFDCFCE7)
+                                                  : const Color(0xFFFEE2E2),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              state.isShiftOpen ? "Shift Open" : "Shift Closed",
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: state.isShiftOpen
+                                                    ? const Color(0xFF15803D)
+                                                    : const Color(0xFFB91C1C),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      state.activeBranch,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        state.activeBranch,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF0F172A),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 2),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.location_on_outlined,
+                                            size: 14,
+                                            color: Color(0xFF64748B),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Expanded(
+                                            child: Text(
+                                              state.branchAddress,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xFF64748B),
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
+
                             const SizedBox(height: 16),
+
                             SizedBox(
                               width: double.infinity,
                               height: 48,
                               child: ElevatedButton.icon(
                                 onPressed: () {
-                                  // Action to switch branch
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const BranchScreen()),
+                                  );
                                 },
+
                                 icon: const Icon(Icons.swap_horiz_rounded, size: 18),
                                 label: const Text("Switch Working Branch"),
                                 style: ElevatedButton.styleFrom(
@@ -250,20 +369,29 @@ class MoreScreen extends StatelessWidget {
                           ],
                         ),
                       ),
+
+
+
+
+
                       const SizedBox(height: 32),
 
-                      // Logout Button
-                      TextButton.icon(
-                        onPressed: () => context.read<MoreCubit>().logout(),
-                        icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
-                        label: const Text(
-                          "Log Out of Account",
-                          style: TextStyle(
-                            color: Colors.redAccent,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      // Logout Button with Dialog
+                      Builder(
+                        builder: (buttonContext) {
+                          return TextButton.icon(
+                            onPressed: () => _showLogoutDialog(buttonContext),
+                            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 18),
+                            label: const Text(
+                              "Log Out of Account",
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 12),
 

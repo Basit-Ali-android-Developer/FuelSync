@@ -1,24 +1,33 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fuel_application/core/helper/cache_helper.dart';
-import 'package:fuel_application/screens/splash/logic/splash_state.dart';
-
+import 'splash_state.dart';
 
 class SplashCubit extends Cubit<SplashState> {
   SplashCubit() : super(SplashInitial());
 
-  Future<void> startSplash() async {
+  void startSplash() async {
     emit(SplashLoading());
 
-    // 3-second delay for splash branding
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(milliseconds: 1500));
 
-    // FIX: Call statically without parentheses CacheHelper()
-    final bool isLoggedIn = CacheHelper.isLoggedIn();
+    final String? token = CacheHelper.getToken();
+    final bool isLoggedIn = token != null && token.trim().isNotEmpty && token != 'null';
 
-    if (isLoggedIn) {
-      emit(SplashAuthenticated());
-    } else {
+    // 1. If not logged in -> Go to Login
+    if (!isLoggedIn) {
       emit(SplashUnauthenticated());
+      return;
+    }
+
+    // 2. Fetch Active Branch ID strictly
+    final int? branchId = CacheHelper.getActiveBranchId();
+
+    // 3. If Logged in but Branch is NOT saved -> Go to Select Branch
+    if (branchId == null) {
+      emit(SplashSelectBranch());
+    } else {
+      // 4. Both Auth & Branch exist -> Dashboard
+      emit(SplashAuthenticated());
     }
   }
 }

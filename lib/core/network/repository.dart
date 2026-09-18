@@ -5,12 +5,13 @@ import 'package:fuel_application/core/network/dio_factory.dart';
 import 'package:fuel_application/screens/auth/data/login_request.dart';
 import 'package:fuel_application/screens/auth/data/login_response.dart';
 import 'package:fuel_application/screens/branch/data/branch_model.dart';
+import 'package:fuel_application/screens/branch/data/branch_response_model.dart';
 import 'package:fuel_application/screens/home/data/dashboard_response_model.dart';
 import 'package:fuel_application/screens/stock/data/stock_response_model.dart';
 
 abstract class AuthRepository {
   Future<LoginResponseModel> login(LoginRequestModel request);
-  Future<List<BranchModel>> getBranches();
+  Future<BranchResponseModel> getBranches();
   Future<DashboardResponseModel> getHomeDashboardData();
   Future<StockResponseModel> getStockData(int branchId);
 }
@@ -28,29 +29,20 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final loginResponse = LoginResponseModel.fromJson(response.data);
 
-      if (!loginResponse.success || loginResponse.data == null) {
-        throw Exception(
-          loginResponse.error ?? 'Login failed. Please check your credentials.',
-        );
-      }
-
-
+      // Save tokens and profile data directly into CacheHelper
       await CacheHelper.saveAuthData(
-        token: loginResponse.data!.accessToken,
-        userId: '',
-        userName: '',
-        userEmail: request.email,
-        userPhone: '',
-        userAddress: '',
+        token: loginResponse.accessToken,
+        refreshToken: loginResponse.refreshToken,
+        userName: loginResponse.name,
+        userEmail: loginResponse.email,
       );
 
       return loginResponse;
     } on DioException catch (e) {
       if (e.response?.data != null && e.response?.data is Map<String, dynamic>) {
-        final errorResponse = LoginResponseModel.fromJson(e.response!.data);
-        if (errorResponse.error != null && errorResponse.error!.isNotEmpty) {
-          throw Exception(errorResponse.error);
-        }
+        final errorData = e.response!.data as Map<String, dynamic>;
+        final errorMessage = errorData['message'] ?? errorData['error'] ?? 'Login failed. Please check your credentials.';
+        throw Exception(errorMessage);
       }
       throw Exception(_handleDioError(e));
     }
@@ -69,32 +61,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
 
   @override
-  Future<List<BranchModel>> getBranches() async {
-    await Future.delayed(const Duration(milliseconds: 800));
+  Future<BranchResponseModel> getBranches() async {
+    try {
 
-    // Mock API response matching your JSON payload
-    final response = {
-      "success": true,
-      "data": [
-        {
-          "branchId": 3,
-          "branchName": "Main Branch",
-          "address": "123 Main Road, Lahore",
-          "isShiftOpen": true,
-        },
-        {
-          "branchId": 4,
-          "branchName": "Gulberg Branch",
-          "address": "45 Gulberg III, Lahore",
-          "isShiftOpen": false,
-        }
-      ],
-      "error": null
-    };
+      final response = await _dio.get(ApiEndpoints.getBranches);
 
-    final List list = response["data"] as List;
-    return list.map((e) => BranchModel.fromJson(e)).toList();
+      if (response.data != null && response.data is Map<String, dynamic>) {
+        return BranchResponseModel.fromJson(response.data);
+      } else {
+        throw Exception("Invalid server response format.");
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized. Please log in again.');
+      }
+      throw Exception('Failed to load branches.');
+    }
   }
+
 
 
   @override

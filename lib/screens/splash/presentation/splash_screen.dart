@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fuel_application/screens/auth/presentation/screen/login_screen.dart';
+import 'package:fuel_application/screens/branch/presentation/screen/branch_screen.dart';
 import 'package:fuel_application/screens/dashboard/presentation/screen/dashboard_screen.dart';
 import 'package:fuel_application/screens/splash/logic/splash_cubit.dart';
 import 'package:fuel_application/screens/splash/logic/splash_state.dart';
@@ -56,12 +57,21 @@ class _SplashScreenState extends State<SplashScreen>
       child: BlocListener<SplashCubit, SplashState>(
         listener: (context, state) {
           if (state is SplashUnauthenticated) {
+            // Case 1: No user data -> Login
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const LoginScreen()),
                   (route) => false,
             );
+          } else if (state is SplashSelectBranch) {
+            // Case 2: User data saved, Branch missing -> Branch Selection
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const BranchScreen()),
+                  (route) => false,
+            );
           } else if (state is SplashAuthenticated) {
+            // Case 3: Both User data & Branch saved -> Dashboard
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const DashboardScreen()),
@@ -79,10 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: SafeArea(
                   child: Column(
                     children: [
-                      // Reduced top space to shift logo upward
                       const Spacer(flex: 2),
-
-                      // Smaller, cleaner logo display
                       ClipRRect(
                         borderRadius: BorderRadius.circular(18.0),
                         child: Image.asset(
@@ -92,10 +99,7 @@ class _SplashScreenState extends State<SplashScreen>
                           fit: BoxFit.contain,
                         ),
                       ),
-
                       const SizedBox(height: 16),
-
-                      // App Title
                       const Text(
                         "FuelBoard",
                         style: TextStyle(
@@ -105,10 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                           letterSpacing: 3.5,
                         ),
                       ),
-
                       const SizedBox(height: 6),
-
-                      // Subtitle
                       Text(
                         "ENTERPRISE STATION MANAGER",
                         style: TextStyle(
@@ -118,11 +119,7 @@ class _SplashScreenState extends State<SplashScreen>
                           letterSpacing: 1.5,
                         ),
                       ),
-
-                      // Increased bottom space to hold the content higher up
                       const Spacer(flex: 3),
-
-                      // Progress Indicator
                       const SizedBox(
                         width: 24,
                         height: 24,
@@ -133,7 +130,6 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 40),
                     ],
                   ),

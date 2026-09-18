@@ -12,15 +12,16 @@ class BranchCubit extends Cubit<BranchState> {
   Future<void> fetchBranches() async {
     emit(state.copyWith(status: RequestStatus.loading));
     try {
-      final branches = await _repository.getBranches();
+      final response = await _repository.getBranches();
 
-      // Auto-select the first branch by default if available
-      final initialSelection = branches.isNotEmpty ? branches.first : null;
+      final initialSelection =
+      response.branches.isNotEmpty ? response.branches.first : null;
 
       emit(
         state.copyWith(
           status: RequestStatus.success,
-          branches: branches,
+          branches: response.branches,
+          permissions: response.permissions,
           selectedBranch: initialSelection,
         ),
       );
@@ -28,7 +29,7 @@ class BranchCubit extends Cubit<BranchState> {
       emit(
         state.copyWith(
           status: RequestStatus.error,
-          errorMessage: e.toString(),
+          errorMessage: e.toString().replaceAll('Exception: ', ''),
         ),
       );
     }
