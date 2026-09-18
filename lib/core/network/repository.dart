@@ -4,7 +4,6 @@ import 'package:fuel_application/core/helper/cache_helper.dart';
 import 'package:fuel_application/core/network/dio_factory.dart';
 import 'package:fuel_application/screens/auth/data/login_request.dart';
 import 'package:fuel_application/screens/auth/data/login_response.dart';
-import 'package:fuel_application/screens/branch/data/branch_model.dart';
 import 'package:fuel_application/screens/branch/data/branch_response_model.dart';
 import 'package:fuel_application/screens/home/data/dashboard_response_model.dart';
 import 'package:fuel_application/screens/stock/data/stock_response_model.dart';
@@ -27,9 +26,20 @@ class AuthRepositoryImpl implements AuthRepository {
         data: request.toJson(),
       );
 
-      final loginResponse = LoginResponseModel.fromJson(response.data);
+      if (response.data == null || response.data is! Map<String, dynamic>) {
+        throw Exception('Invalid response format received from server.');
+      }
 
-      // Save tokens and profile data directly into CacheHelper
+      final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+
+      // Ensure access token is present in payload before proceeding
+      if (!data.containsKey('accessToken') || data['accessToken'] == null || data['accessToken'].toString().isEmpty) {
+        final errorMessage = data['detail'] ?? data['message'] ?? 'Invalid credentials.';
+        throw Exception(errorMessage);
+      }
+
+      final loginResponse = LoginResponseModel.fromJson(data);
+
       await CacheHelper.saveAuthData(
         token: loginResponse.accessToken,
         refreshToken: loginResponse.refreshToken,
@@ -39,54 +49,36 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return loginResponse;
     } on DioException catch (e) {
-      if (e.response?.data != null && e.response?.data is Map<String, dynamic>) {
-        final errorData = e.response!.data as Map<String, dynamic>;
-        final errorMessage = errorData['message'] ?? errorData['error'] ?? 'Login failed. Please check your credentials.';
-        throw Exception(errorMessage);
-      }
       throw Exception(_handleDioError(e));
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
-  String _handleDioError(DioException e) {
-    if (e.response != null && e.response?.data is Map) {
-      final data = e.response?.data as Map;
-      return data['error'] ?? data['message'] ?? 'Network error occurred';
-    } else if (e.type == DioExceptionType.connectionTimeout ||
-        e.type == DioExceptionType.connectionError) {
-      return 'Cannot connect to server. Check your connection or backend status.';
-    }
-    return 'An unexpected error occurred. Please try again.';
-  }
 
 
   @override
   Future<BranchResponseModel> getBranches() async {
     try {
-
       final response = await _dio.get(ApiEndpoints.getBranches);
 
       if (response.data != null && response.data is Map<String, dynamic>) {
         return BranchResponseModel.fromJson(response.data);
       } else {
-        throw Exception("Invalid server response format.");
+        throw Exception('Invalid branch data format received.');
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        throw Exception('Unauthorized. Please log in again.');
-      }
-      throw Exception('Failed to load branches.');
+      throw Exception(_handleDioError(e));
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
-
-
   @override
   Future<DashboardResponseModel> getHomeDashboardData() async {
-    // Simulate delay
+    // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 600));
 
-    // Mock API JSON matching provided response
     final response = {
       "success": true,
       "data": {
@@ -156,13 +148,11 @@ class AuthRepositoryImpl implements AuthRepository {
     return DashboardResponseModel.fromJson(response['data'] as Map<String, dynamic>);
   }
 
-
-
-
-
   @override
   Future<StockResponseModel> getStockData(int branchId) async {
-    // When live: replace mock with -> final response = await _dio.get('${ApiEndpoints.stock}/$branchId');
+    // When connecting live API:
+    // final response = await _dio.get('${ApiEndpoints.stock}/$branchId');
+
     await Future.delayed(const Duration(milliseconds: 600));
 
     final response = {
@@ -266,5 +256,39 @@ class AuthRepositoryImpl implements AuthRepository {
     };
 
     return StockResponseModel.fromJson(response['data'] as Map<String, dynamic>);
+  }
+
+
+  String _handleDioError(DioException e) {
+    if (e.response?.data != null && e.response?.data is Map<String, dynamic>) {
+      final Map<String, dynamic> errorData = e.response!.data as Map<String, dynamic>;
+
+      // Checks for RFC 9110 standard keys ("detail", "title") and generic keys ("message", "error")
+      if (errorData['detail'] != null && errorData['detail'].toString().isNotEmpty) {
+        return errorData['detail'].toString();
+      }
+      if (errorData['message'] != null && errorData['message'].toString().isNotEmpty) {
+        return errorData['message'].toString();
+      }
+      if (errorData['title'] != null && errorData['title'].toString().isNotEmpty) {
+        return errorData['title'].toString();
+      }
+      if (errorData['error'] != null && errorData['error'].toString().isNotEmpty) {
+        return errorData['error'].toString();
+      }
+    }
+
+    if (e.response?.statusCode == 401) {
+      return 'Unauthorized. Invalid credentials or expired session.';
+    }
+
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.connectionError) {
+      return 'Cannot connect to server. Please check your internet connection.';
+    }
+
+    return 'An unexpected network error occurred. Please try again.';
   }
 }

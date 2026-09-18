@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fuel_application/core/helper/cache_helper.dart';
 import 'package:fuel_application/core/network/repository.dart';
 import 'package:fuel_application/screens/home/logic/home_cubit.dart';
 import 'package:fuel_application/screens/home/logic/home_state.dart';
@@ -9,8 +10,19 @@ import 'package:fuel_application/screens/shift/presentation/screen/active_screen
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+
+  String _getUserName() {
+    final name = CacheHelper.getUserName(); // Or CacheHelper.getAuthData()['userName'] depending on your CacheHelper implementation
+    if (name != null && name.trim().isNotEmpty && name != 'null') {
+      return name.trim();
+    }
+    return "User"; // Default fallback
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userName = _getUserName();
+
     return BlocProvider(
       create: (context) => HomeCubit(AuthRepositoryImpl())..fetchDashboardData(),
       child: Scaffold(
@@ -56,9 +68,11 @@ class HomeScreen extends StatelessWidget {
                                 color: Color(0xFF64748B),
                               ),
                             ),
+
                             const SizedBox(height: 2),
-                            const Text(
-                              "Ali Khan",
+
+                            Text(
+                              userName,
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,

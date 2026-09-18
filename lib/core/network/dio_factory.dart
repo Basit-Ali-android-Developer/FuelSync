@@ -16,7 +16,8 @@ class DioFactory {
           baseUrl: ApiEndpoints.baseUrl,
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 30),
-          validateStatus: (status) => status != null && status < 500,
+          // FIX: Treat any status >= 300 (including 401) as an error so Dio throws a DioException
+          validateStatus: (status) => status != null && status >= 200 && status < 300,
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -83,7 +84,7 @@ class DioFactory {
                 path.contains('/signUp') ||
                 path.contains('/signup');
 
-            // Handle 401 Unauthorized (Session Expiration)
+            // Handle 401 Unauthorized (Session Expiration) for non-auth calls
             if (e.response?.statusCode == 401 && !isAuthRequest) {
               developer.log(
                 "🔒 Session expired (401). Purging token and resetting cache...",
