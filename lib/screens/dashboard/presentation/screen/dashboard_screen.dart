@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fuel_application/screens/dashboard/logic/dashboard_cubit.dart';
 import 'package:fuel_application/core/constants/app_colors.dart';
+import 'package:fuel_application/screens/dashboard/logic/dashboard_cubit.dart';
 import 'package:fuel_application/screens/dashboard/logic/dashboard_state.dart';
 import 'package:fuel_application/screens/home/presentation/screen/home_screen.dart';
 import 'package:fuel_application/screens/more/presentation/screen/more_screen.dart';
@@ -21,19 +21,20 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => DashboardCubit(initialIndex: initialIndex),
-      child: const _DashboardScreenBody(),
+      child: _DashboardScreenBody(),
     );
   }
 }
 
 class _DashboardScreenBody extends StatelessWidget {
-  const _DashboardScreenBody();
+  _DashboardScreenBody();
 
-  final List<Widget> pages = const [
-    HomeScreen(),
-    StockScreen(),
-    ReportScreen(),
-    MoreScreen(),
+  // Removed const modifier from pages list to allow non-const widgets
+  final List<Widget> pages = [
+    const HomeScreen(),
+    const StockScreen(),
+    const ReportsScreen(),
+    const MoreScreen(),
   ];
 
   Widget _buildNavItem({
@@ -150,7 +151,7 @@ class _DashboardScreenBody extends StatelessWidget {
                   ),
                   BottomNavigationBarItem(
                     icon: _buildNavItem(
-                      icon: Icons.more_horiz, // Native 3 dots icon
+                      icon: Icons.more_horiz,
                       label: "More",
                       isActive: selectedIndex == 3,
                     ),
