@@ -6,11 +6,13 @@ import 'package:fuel_application/screens/auth/data/login_request.dart';
 import 'package:fuel_application/screens/auth/data/login_response.dart';
 import 'package:fuel_application/screens/branch/data/branch_model.dart';
 import 'package:fuel_application/screens/home/data/dashboard_response_model.dart';
+import 'package:fuel_application/screens/stock/data/stock_response_model.dart';
 
 abstract class AuthRepository {
   Future<LoginResponseModel> login(LoginRequestModel request);
   Future<List<BranchModel>> getBranches();
   Future<DashboardResponseModel> getHomeDashboardData();
+  Future<StockResponseModel> getStockData(int branchId);
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -168,5 +170,117 @@ class AuthRepositoryImpl implements AuthRepository {
     };
 
     return DashboardResponseModel.fromJson(response['data'] as Map<String, dynamic>);
+  }
+
+
+
+
+
+  @override
+  Future<StockResponseModel> getStockData(int branchId) async {
+    // When live: replace mock with -> final response = await _dio.get('${ApiEndpoints.stock}/$branchId');
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    final response = {
+      "success": true,
+      "data": {
+        "totalInventory": {
+          "currentLitres": 28450.0,
+          "totalCapacity": 65000.0,
+          "fillPercentage": 43.8,
+          "tankAlertCount": 1,
+          "superPetrolLitres": 19500.0,
+          "dieselLitres": 8950.0,
+          "ullageLitres": 36550.0
+        },
+        "tanks": [
+          {
+            "tankNumber": "T-01",
+            "fuelTypeName": "Super Petrol (92 RON)",
+            "status": "ATG Online",
+            "tankType": "Underground UST",
+            "currentLevelLitres": 8100.0,
+            "capacityLitres": 20000.0,
+            "fillPercentage": 40.5,
+            "systemLevel": 8100.0,
+            "lastManualDip": 8050.0,
+            "manualDipDiff": -50.0,
+            "lastDipTime": "Today, 09:15 AM",
+            "reorderThreshold": 2000.0
+          },
+          {
+            "tankNumber": "T-02",
+            "fuelTypeName": "High Speed Diesel (HSD)",
+            "status": "Low Stock Alert",
+            "tankType": "Underground UST",
+            "currentLevelLitres": 1200.0,
+            "capacityLitres": 15000.0,
+            "fillPercentage": 8.0,
+            "systemLevel": 1200.0,
+            "lastManualDip": 1150.0,
+            "manualDipDiff": -50.0,
+            "lastDipTime": "Today, 08:20 AM",
+            "reorderThreshold": 1500.0,
+            "alertMessage": "Below safety reserve (1,500 L). Tanker refill scheduled."
+          },
+          {
+            "tankNumber": "T-03",
+            "fuelTypeName": "Super Petrol (92 RON)",
+            "status": "Manual Dip Only",
+            "tankType": "Standing Aboveground",
+            "currentLevelLitres": 11400.0,
+            "capacityLitres": 15000.0,
+            "fillPercentage": 76.0,
+            "systemLevel": 11400.0,
+            "lastManualDip": 11420.0,
+            "manualDipDiff": 20.0,
+            "lastDipTime": "Yesterday, 10:45 PM",
+            "reorderThreshold": 2500.0
+          },
+          {
+            "tankNumber": "T-04",
+            "fuelTypeName": "High Speed Diesel (HSD)",
+            "status": "ATG Online",
+            "tankType": "Commercial Fleet Tank",
+            "currentLevelLitres": 7750.0,
+            "capacityLitres": 15000.0,
+            "fillPercentage": 51.7,
+            "systemLevel": 7750.0,
+            "lastManualDip": 7710.0,
+            "manualDipDiff": -40.0,
+            "lastDipTime": "Today, 08:22 AM",
+            "reorderThreshold": 2000.0
+          }
+        ],
+        "recentDeliveries": [
+          {
+            "fuelType": "High Speed Diesel",
+            "tankNumber": "T-02",
+            "tankerInfo": "PKT-1422 • OMC Seal: HSD-98121",
+            "status": "Completed",
+            "volumeDischarged": 9850.0,
+            "varianceLitres": -150.0,
+            "baseRate": 265.50,
+            "totalAmountPkr": 2615175.0,
+            "timeStamp": "Jan 17, 08:00 AM",
+            "verifiedBy": "Manager"
+          },
+          {
+            "fuelType": "Super Petrol (92 RON)",
+            "tankNumber": "T-01",
+            "tankerInfo": "LHD-9502 • OMC Seal: MAT-12004",
+            "status": "Full Discharge",
+            "volumeDischarged": 15000.0,
+            "varianceLitres": 0.0,
+            "baseRate": 258.80,
+            "totalAmountPkr": 3882000.0,
+            "timeStamp": "Jan 15, 02:30 PM",
+            "verifiedBy": "Shift In-charge"
+          }
+        ]
+      }
+    };
+
+    return StockResponseModel.fromJson(response['data'] as Map<String, dynamic>);
   }
 }
