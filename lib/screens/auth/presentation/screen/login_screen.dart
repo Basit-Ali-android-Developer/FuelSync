@@ -8,7 +8,6 @@ import 'package:fuel_application/core/widgets/primary_text_field.dart';
 import 'package:fuel_application/screens/auth/logic/login_cubit.dart';
 import 'package:fuel_application/screens/auth/logic/login_state.dart';
 import 'package:fuel_application/screens/branch/presentation/screen/branch_screen.dart';
-import 'package:fuel_application/screens/dashboard/presentation/screen/dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -166,40 +165,40 @@ class _LoginScreenState extends State<LoginScreen> {
                                 label: "Email Address",
                                 hintText: "owner@station.com",
                                 prefixIcon: Icons.mail_outline_rounded,
-                                keyboardType: TextInputType.emailAddress,
+                               // keyboardType: TextInputType.emailAddress,
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return "Please enter your email";
                                   }
-                                  if (!value.contains('@')) {
-                                    return "Please enter a valid email";
-                                  }
+                                  // if (!value.contains('@')) {
+                                  //   return "Please enter a valid email";
+                                  // }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 20),
 
                               // PASSWORD FIELD HEADER WITH FORGOT BUTTON
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const SizedBox.shrink(),
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Forgot Password Action
-                                    },
-                                    child: const Text(
-                                      "Forgot?",
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF0F172A),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     const SizedBox.shrink(),
+                              //     GestureDetector(
+                              //       onTap: () {
+                              //         // Forgot Password Action
+                              //       },
+                              //       child: const Text(
+                              //         "Forgot?",
+                              //         style: TextStyle(
+                              //           fontSize: 13,
+                              //           fontWeight: FontWeight.w600,
+                              //           color: Color(0xFF0F172A),
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // const SizedBox(height: 4),
 
                               PrimaryTextField(
                                 controller: _passwordController,
@@ -225,9 +224,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (value == null || value.trim().isEmpty) {
                                     return "Please enter your password";
                                   }
-                                  if (value.length < 6) {
-                                    return "Password must be at least 6 characters";
-                                  }
+                                  // if (value.length < 6) {
+                                  //   return "Password must be at least 6 characters";
+                                  // }
                                   return null;
                                 },
                               ),
@@ -271,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 32),
 
-                        // Enhanced Design: End-to-End Security Badge
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
