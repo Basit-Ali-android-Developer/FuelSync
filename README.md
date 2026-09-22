@@ -1,4 +1,4 @@
-<h1 align="center">⛽ FuelSync</h1>
+<h1 align="center">⛽ FuelBoard</h1>
 <p align="center">Enterprise-grade fuel station management app — digitizing shift reconciliation, tank dip auditing, and sales reporting.</p>
 
 <p align="center">
